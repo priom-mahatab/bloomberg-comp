@@ -7,7 +7,7 @@ import os
 import glob
 import yfinance as yf
 
-from strategies.oversold_strat import EMA_RSI_TrendFollowing
+from strategies.oversold_strat import EMA_RSI_TrendFollowing # import your strategy from here. DEFINE IN A SEPARATE FILE USING MY FORMAT
 
 basket = [
     "ADI", "DASH", "CB", "WELL", "KKR", "BTI", "IBN", "CMCSA", "COP", "MO", "SO", "MELI", "BUD",
@@ -30,6 +30,7 @@ end_date = "2025-10-17" # PUT THE DATE OF THE NEXT DAY HERE INSTEAD OF PRESENT
 
 csv_files = glob.glob(os.path.join(output_dir, "*.csv"))
 
+# code for downloading data
 # for ticker in basket:
 #     try:
 #         print(f"Downloading {ticker}...")
@@ -44,7 +45,7 @@ csv_files = glob.glob(os.path.join(output_dir, "*.csv"))
 #     except Exception as e:
 #         print(f"Failed for {ticker}: {e}")
 
-
+# adds indicator data to price data
 def organize_price_data_and_indicators(file, start_date, end_date):
     df = pd.read_csv(file)
 
@@ -68,12 +69,14 @@ def organize_price_data_and_indicators(file, start_date, end_date):
 
     return df
 
+# exhaustive search for one stock
 def exhaustive_parameter_search(df):
 
     results = []
 
     # use a range of values you want for your indicators here
-    ema_short_values = [3, 8, 12, 20]
+    # MUST USE INDICATORS ACCORDING TO YOUR STRATEGY
+    ema_short_values = [3, 8, 12, 20] 
     ema_long_values = [10, 30, 50, 100]
 
     rsi_values = [10, 14, 20]
@@ -121,6 +124,7 @@ def exhaustive_parameter_search(df):
     results_df = pd.DataFrame(results).sort_values(by="Total Return", ascending=False)   
     return results_df  
 
+# complete exhaustive search
 def run_exhaustive_search_on_basket():
     all_results = [] 
 
@@ -137,13 +141,12 @@ def run_exhaustive_search_on_basket():
             else:
                 print(f"{ticker}: No valid parameter sets found")
         except Exception as e:
-            print(f"Error with {file}: {e}")
+            print(f"Error with {file}: {e}") # this error is triggered if (win_rate > 50 and total_trades >= 190 and total_return > 0 and avg_trade_duration < 5) are not fulfilled for a stock
 
     final_df = pd.DataFrame(all_results)
     final_df.to_csv("optimized_strategies.csv", index=False)
 
 def main():
-
     run_exhaustive_search_on_basket()
 
 
